@@ -24,15 +24,9 @@ Implementations and Resources for GRPO and Its Variants.
 
 ### (3) 关键公式
 
-**优势函数：**
+优势函数：$\hat{A}_{i,t} = \frac{r_i - \text{mean}(\{R_i\}_{i=1}^G)}{\text{std}\{R_i\}_{i=1}^G)}$
 
-$\hat{A}_{i,t} = \frac{r_i - \text{mean}(\{R_i\}_{i=1}^G)}{\text{std}\{R_i\}_{i=1}^G)}$
-
-
-
-**目标函数：**
-
-$J_{\text{GRPO}}(\theta)
+目标函数：$J_{\text{GRPO}}(\theta)
 = \mathbb{E}_{(q,a)}\left[
 \frac{1}{G} \sum_{i=1}^{G}
 \min\big(

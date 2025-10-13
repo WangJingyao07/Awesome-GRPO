@@ -4,11 +4,9 @@ Implementations and Resources for GRPO and Its Variants.
 
 
 
-
-
 ## 1. GRPO — *Group Relative Policy Optimization*
 
-> （Shao et al., *DeepSeekMath, 2024*）
+> DAPO: An Open-Source LLM Reinforcement Learning System at Scale
 
 ### (1) 核心思想
 
@@ -28,31 +26,31 @@ Implementations and Resources for GRPO and Its Variants.
 
 **优势函数：**
 $$
-\hat{A}*i = \frac{r_i - \text{mean}({r_k}*{k=1}^G)}{\text{std}({r_k}_{k=1}^G)}
+\hat{A}_{i,t} = \frac{r_i - \text{mean}(\{R_i\}_{i=1}^G)}{\text{std}\{R_i\}_{i=1}^G)}
 \tag{1}
 $$
 **目标函数：**
 $$
 J_{\text{GRPO}}(\theta)
-= \mathbb{E}\left[
+= \mathbb{E}_{(q,a)}\left[
 \frac{1}{G} \sum_{i=1}^{G}
 \min\big(
-w_i(\theta)\hat{A}*i,,
-\text{clip}(w_i(\theta), 1-\epsilon, 1+\epsilon)\hat{A}*i
+w_i(\theta)\hat{A}_i,,
+\text{clip}(w_i(\theta), 1-\epsilon, 1+\epsilon)\hat{A}_i
 \big)
 \right]
 \tag{2}
 $$
 
-其中 $w_i(\theta) = \frac{\pi*\theta(o_i|q)}{\pi*{\theta_\text{old}}(o_i|q)}$。
+其中 $w_i(\theta) = \frac{\pi_\theta(o_i|q)}{\pi_{\theta_\text{old}}(o_i|q)}$。
 
 
 
 
 
-## 2. DAPO — *Dynamic Sampling & Decoupled Clip Policy Optimization*
+## 2. DAPO — *Dynamic Sampling Policy Optimization*
 
-> （Yu et al., *DAPO: Open-Source RL at Scale, 2025*）
+> DAPO: An Open-Source LLM Reinforcement Learning System at Scale
 
 ### (1) 核心思想
 
@@ -72,34 +70,21 @@ DAPO是GRPO的工程级强化版，通过改进采样与归一化机制提升稳
 
 ### (3) 关键公式
 
-与GRPO相似，但损失归一化不同：
-
-$$
-J_{\text{DAPO}}(\theta)
-= \mathbb{E}\left[
-\frac{1}{\sum_i |o_i|}\sum_{i,t}
-\min\big(w_{i,t}A_i,, \text{clip}(w_{i,t},1-\epsilon,1+\epsilon)A_i\big)
-\right]
-\tag{3}
-$$
-
-其中 $A_i$ 仍为统一序列级优势。
-
-DAPO改进了损失计算的**归一化层次**，但**未改变奖励内容**。
+与GRPO相似，但损失归一化不同
 
 
 
 
 
-## 3. Dr.GRPO — *Divergence-Regularized Group Relative Policy Optimization*
+## 3. Dr.GRPO
 
-> （用于DeepSeek-R1, 2025）
+> Understanding R1-Zero-Like Training: A Critical Perspective
 
 ### (1) 核心思想
 
 * 在GRPO的基础上加入**KL散度正则项**，显式约束策略与参考策略间的偏移。
 * 实质为**KL约束的GRPO**，兼顾稳定性与探索性。
-* 目标函数类似GRPO + 罚项：(-\beta , D_{KL}(\pi_\theta \Vert \pi_\text{ref}))。
+* 目标函数类似GRPO + 罚项：$-\beta , D_{KL}(\pi_\theta \Vert \pi_\text{ref})$。
 
 ### (2) 训练流程
 
@@ -110,20 +95,12 @@ DAPO改进了损失计算的**归一化层次**，但**未改变奖励内容**�
 
 ### (3) 关键公式
 
-[
-J_{\text{Dr.GRPO}}(\theta)
-= \mathbb{E}!\left[
-\frac{1}{G}\sum_i
-\min\big(w_iA_i,,\text{clip}(w_i,1-\epsilon,1+\epsilon)A_i\big)
-\right]
 
-* \beta, D_{\text{KL}}!\left[\pi_\theta(\cdot|q),|,\pi_{\text{ref}}(\cdot|q)\right]
-  \tag{4}
-  ]
-  其中 (\beta) 控制保守性与探索性权衡。
-  → 该形式后来被广泛用作**policy regularization baseline**。
 
----
+
+
+
+
 
 ## 4. GTPO — *Group Token Policy Optimization*
 
@@ -146,32 +123,16 @@ J_{\text{Dr.GRPO}}(\theta)
 ### (3) 关键公式
 
 **成功序列token奖励：**
-[
-\tilde{r}^+*{i,t} = \alpha_1 r_i + \alpha_2 \frac{H*{i,t}}{\sum_{k=1}^{n} H_{k,t}}\cdot d_t
-\tag{5}
-]
+
 
 **失败序列token奖励：**
-[
-\tilde{r}^-*{j,t} = \alpha_1(-1) + \alpha_2 \frac{1/H*{j,t}}{\sum_{k=1}^{m} (1/H_{k,t})}\cdot h_t (-1)
-\tag{6}
-]
 
 **token级目标函数：**
-[
-J_{\text{GTPO}}(\theta)
-= \mathbb{E}!\left[
-\frac{1}{\sum_k |o_k|}!!
-\sum_{i,t}
-\min(w_{i,t}\tilde{A}*{i,t},
-\text{clip}(w*{i,t},1-\epsilon,1+\epsilon)\tilde{A}_{i,t})
-\right]
-\tag{7}
-]
 
-> ✅ 首次在GRPO框架中实现**真正的token-level信用分配**。
 
----
+
+
+
 
 ## 5. GRPO-S — *Sequence-Level Entropy-Weighted GRPO*
 
@@ -192,31 +153,8 @@ J_{\text{GTPO}}(\theta)
 ### (3) 关键公式
 
 **序列级奖励重塑：**
-[
-\hat{r}^+_i = \beta_1 r_i + \beta_2 \frac{\hat{H}_i}{\sum_k \hat{H}_k} \cdot n
-,\quad
-\hat{r}^-_j = \beta_1(-1) + \beta_2 \frac{1/\hat{H}_j}{\sum_k (1/\hat{H}_k)} \cdot m(-1)
-\tag{8}
-]
 
 **目标函数：**
-[
-J_{\text{GRPO-S}}(\theta)
-= \mathbb{E}!\left[
-\frac{1}{G}\sum_i
-\min(\hat{w}_i\hat{A}_i,
-\text{clip}(\hat{w}_i,1-\epsilon,1+\epsilon)\hat{A}_i)
-\right]
-\tag{9}
-]
-
-其中：
-[
-\hat{w}*i = \frac{1}{|o_i|}\sum_t \frac{\pi*\theta(o_{i,t}|q,o_{i,<t})}{\pi_{\theta_\text{old}}(o_{i,t}|q,o_{i,<t})}
-\tag{10}
-]
-
-> ✅ 兼顾**性能提升与计算效率**，实证上在AIME等推理基准上超越DAPO与GRPO。
 
 ## 
 

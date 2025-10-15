@@ -24,9 +24,9 @@ Implementations and Resources for GRPO and Its Variants.
 
 ### (3) 关键公式
 
-![image-20251015112057918](.\Image\image-20251015112057918.png)
+![image-20251015112057918](./Image/image-20251015112057918.png)
 
-![image-20251015112139988](.\Image\image-20251015112139988.png)
+![image-20251015112139988](./Image/image-20251015112139988.png)
 
 
 
@@ -85,7 +85,7 @@ Implementations and Resources for GRPO and Its Variants.
 
 ### (3) 关键公式
 
-![image-20251015112201428](.\Image\image-20251015112201428.png)
+![image-20251015112201428](./Image/image-20251015112201428.png)
 
 
 

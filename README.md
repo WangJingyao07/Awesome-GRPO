@@ -24,23 +24,9 @@ Implementations and Resources for GRPO and Its Variants.
 
 ### (3) 关键公式
 
-优势函数：
-$$
-\hat{A}_{i,t} = \frac{r_i - \text{mean}(\{R_i\}_{i=1}^G)}{\text{std}\{R_i\}_{i=1}^G)}
-$$
-目标函数：
-$$
-J_{\text{GRPO}}(\theta)
-= \mathbb{E}_{(q,a)}[
-\frac{1}{G}\sum_{i=1}^{G}
-\min\big(
-w_i(\theta)\hat{A}_i,
-\text{clip}(w_i(\theta), 1-\epsilon, 1+\epsilon)\hat{A}_i
-\big)]
-$$
-其中 $w_i(\theta) = \frac{\pi_\theta(o_i|q)}{\pi_{\theta_\text{old}}(o_i|q)}$。
+![image-20251015112057918](C:\Users\王婧瑶\AppData\Roaming\Typora\typora-user-images\image-20251015112057918.png)
 
-
+![image-20251015112139988](C:\Users\王婧瑶\AppData\Roaming\Typora\typora-user-images\image-20251015112139988.png)
 
 
 
@@ -99,7 +85,7 @@ $$
 
 ### (3) 关键公式
 
-
+![image-20251015112201428](C:\Users\王婧瑶\AppData\Roaming\Typora\typora-user-images\image-20251015112201428.png)
 
 
 
@@ -113,7 +99,7 @@ $$
 
 * 在GRPO的基础上加入**KL散度正则项**，显式约束策略与参考策略间的偏移。
 * 实质为**KL约束的GRPO**，兼顾稳定性与探索性。
-* 目标函数类似GRPO + 罚项：$-\beta , D_{KL}(\pi_\theta \Vert \pi_\text{ref})$。
+* 目标函数类似GRPO + 惩罚项。
 
 ### (2) 训练流程
 

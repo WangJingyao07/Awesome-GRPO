@@ -1,13 +1,13 @@
 # Awesome-GRPO
 
-Implementations and Resources for GRPO and Its Variants.
+🔥 本仓库提供了GRPO及其变体（DAPO, GTPO, Dr.GRPO etc.）的论文，代码，快速部署方案，以及核心总结。
 
-## Quick Start for Implementation of GRPO-style Framework
 
-The **CODE** provide a clean, swappable architecture. You can switch the optimization rule via a flag. 
+## Quick Start for Implementation
 
-You can try each of the strategy quickly with **only two lines of order**, we provide an README.md in CODE.
+**CODE** 提供了一个简洁、可切换的GRPO及其变体的运行方案，可以通过一个标志来切换优化规则。
 
+您只需**两行命令**即可快速尝试每个策略，我们在 CODE 中提供了 README.md 文件。
 
 
 ## 1. GRPO — *Group Relative Policy Optimization*

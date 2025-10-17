@@ -2,6 +2,12 @@
 
 Implementations and Resources for GRPO and Its Variants.
 
+## Quick Start for Implementation of GRPO-style Framework
+
+The **CODE** provide a clean, swappable architecture. You can switch the optimization rule via a flag. 
+
+You can try each of the strategy quickly with **only two lines of order**, we provide an README.md in CODE.
+
 
 
 ## 1. GRPO — *Group Relative Policy Optimization*
@@ -27,6 +33,17 @@ Implementations and Resources for GRPO and Its Variants.
 ![image-20251015112057918](./Image/image-20251015112057918.png)
 
 ![image-20251015112139988](./Image/image-20251015112139988.png)
+
+### (4) Run GRPO
+
+```bash
+# Start reference server
+CUDA_VISIBLE_DEVICES=7 python ref_client.py
+
+# Launch training
+CUDA_VISIBLE_DEVICES=2,3,4,5,6 deepspeed train.py --algo grpo
+
+```
 
 
 
@@ -75,6 +92,8 @@ Implementations and Resources for GRPO and Its Variants.
 - 长序列的梯度累积更多 token 噪声；短序列的梯度方差较小；最终 batch 平均时，长序列梯度被缩放后贡献不足 → 梯度方向偏向短序列样本。
 
 
+#### **4）去掉KL项**
+
 
 ### (2) 训练流程
 
@@ -87,6 +106,17 @@ Implementations and Resources for GRPO and Its Variants.
 
 ![image-20251015112201428](./Image/image-20251015112201428.png)
 
+
+### (4) Run DAPO
+
+```bash
+# Start reference server
+CUDA_VISIBLE_DEVICES=7 python ref_client.py
+
+# Launch training
+CUDA_VISIBLE_DEVICES=2,3,4,5,6 deepspeed train.py --algo dapo
+
+```
 
 
 

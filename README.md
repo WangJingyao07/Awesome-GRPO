@@ -1,4 +1,12 @@
 # Awesome-GRPO
+[![Awesome](https://awesome.re/badge.svg)](https://awesome.re) 
+![Static Badge](https://img.shields.io/badge/Meta_Learning-Task_Sampling-blue)
+![Static Badge](https://img.shields.io/badge/to_be_continue-orange)
+![Static Badge](https://img.shields.io/badge/IJCV-yellow)
+![pv](https://pageview.vercel.app/?github_user=WangJingyao07/Adaptive-Sampler)
+![Repo Clones](https://img.shields.io/badge/Clones-61-blue)
+![Stars](https://img.shields.io/github/stars/WangJingyao07/Adaptive-Sampler)
+
 
 🔥 本仓库提供了GRPO及其变体（DAPO, GTPO, Dr.GRPO etc.）的论文，代码，快速部署方案，以及核心总结。
 

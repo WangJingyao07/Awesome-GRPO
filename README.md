@@ -1,11 +1,15 @@
+<div>
+  <div align="right">
+    👆 右上角点击 <img class="ai-header-badge-img" src="https://img.shields.io/github/stars/WangJingyao07/Awesome-GRPO.svg?style=social&label=Star"> 告诉我，你希望这个项目继续加速更新迭代 ❤️ & ☕️
+  </div>
+</div>
+
+
 # Awesome-GRPO
 [![Awesome](https://awesome.re/badge.svg)](https://awesome.re) 
-![Static Badge](https://img.shields.io/badge/Meta_Learning-Task_Sampling-blue)
+![Static Badge](https://img.shields.io/badge/GRPO-green)
 ![Static Badge](https://img.shields.io/badge/to_be_continue-orange)
-![Static Badge](https://img.shields.io/badge/IJCV-yellow)
-![pv](https://pageview.vercel.app/?github_user=WangJingyao07/Adaptive-Sampler)
-![Repo Clones](https://img.shields.io/badge/Clones-61-blue)
-![Stars](https://img.shields.io/github/stars/WangJingyao07/Adaptive-Sampler)
+![Stars](https://img.shields.io/github/stars/WangJingyao07/Awesome-GRPO)
 
 
 🔥 本仓库提供了GRPO及其变体（DAPO, GTPO, Dr.GRPO etc.）的论文，代码，快速部署方案，以及核心总结。

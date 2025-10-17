@@ -4,7 +4,7 @@ from ref_server import raw_queue, result_queue, bytes_list_to_list, tensor_to_by
 
 from transformers import AutoTokenizer, AutoModelForCausalLM
 
-model_path = "/data/users/models/Qwen2.5-7B-Instruct"
+model_path = "/data/users/wjy/models/Qwen2.5-1.5B-Instruct"
 ref_model = AutoModelForCausalLM.from_pretrained(
     model_path, torch_dtype=torch.bfloat16, _attn_implementation="sdpa").to('cuda')
 ref_model.eval()

@@ -100,6 +100,7 @@ CUDA_VISIBLE_DEVICES=2,3 deepspeed train.py --algo dap
 ## 📘 Papers and Summary
 
 All relevant works and their detailed analyses are included in the [`papers/`](./papers) directory.
+
 Each PDF corresponds to a variant or conceptual expansion of GRPO, with summaries and comparisons in the subdirectory README.
 
 

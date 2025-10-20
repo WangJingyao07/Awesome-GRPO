@@ -108,7 +108,7 @@ Each PDF corresponds to a variant or conceptual expansion of GRPO, with summarie
 
 ## 📄 Citation
 
-If you find this repository useful, please cite or reference:
+If you find this repository useful, please consider cite and star our repository (🥰🎉Thanks!!!):
 
 ```bibtex
 @misc{Awesome-GRPO,

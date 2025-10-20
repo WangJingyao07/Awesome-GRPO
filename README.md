@@ -11,7 +11,7 @@
 
 | Date           | Update                                                       |
 | -------------- | ------------------------------------------------------------ |
-| **2025-10-19** | Added configuration and runnable scripts for **DAPO** variant. |
+| **2025-10-19** | Added configuration and runnable scripts for **DAPO** and **Dr.GRPO** variant. |
 | **2025-10-17** | Integrated **Modularated** core **GRPO** training pipeline with DeepSpeed and vLLM inference. |
 | **2025-10-15** | Uploaded key papers and organized the `papers/` directory (GRPO, DAPO, Dr.GRPO, etc.). |
 | **2025-09-30** | Repository initialization and documentation setup.           |
@@ -52,7 +52,7 @@ Awesome-GRPO/
 | :------------ | :----------------: | :----------------------- |
 | **GRPO**      |         ✅          | ✅                        |
 | **DAPO**      |         ✅          | ✅                        |
-| **Dr.GRPO**   |         ☐          | ✅                        |
+| **Dr.GRPO**   |         ✅          | ✅                        |
 | **GTPO**      |         ☐          | ✅                        |
 | **GRPO-S**    |         ☐          | ✅                        |
 | **2-GRPO** |         ☐          | ✅                        |
@@ -83,7 +83,10 @@ cd Awesome-GRPO/CODE
 CUDA_VISIBLE_DEVICES=0,1 deepspeed train.py --algo grpo
 
 # Example: run DAPO
-CUDA_VISIBLE_DEVICES=2,3 deepspeed train.py --algo dap
+CUDA_VISIBLE_DEVICES=2,3 deepspeed train.py --algo dapo
+
+# Example: run Dr.GRPO
+CUDA_VISIBLE_DEVICES=2,3 deepspeed train.py --algo drgrpo
 ...
 
 ```

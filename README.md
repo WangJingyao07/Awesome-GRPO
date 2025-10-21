@@ -1,6 +1,6 @@
 # Awesome-GRPO
 
-[![Awesome](https://awesome.re/badge.svg)](https://awesome.re) ![Static Badge](https://img.shields.io/badge/GRPO-green)![Static Badge](https://img.shields.io/badge/to_be_continue-orange)![Stars](https://img.shields.io/github/stars/WangJingyao07/Awesome-GRPO)
+[![Awesome](https://awesome.re/badge.svg)](https://awesome.re) ![Static Badge](https://img.shields.io/badge/GRPO-green)![Static Badge](https://img.shields.io/badge/to_be_continue-orange)![Repo Clones](https://img.shields.io/badge/Clones-66-blue)![Stars](https://img.shields.io/github/stars/WangJingyao07/Awesome-GRPO)
 
 
 🔥 A curated and extensible repository for **GRPO** and its **variants**, combining both *code implementations* and *paper collections* for advanced **LLM reinforcement fine-tuning**.

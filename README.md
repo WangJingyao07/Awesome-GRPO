@@ -11,7 +11,7 @@
 
 | Date           | Update                                                       |
 | -------------- | ------------------------------------------------------------ |
-| **2025-10-19** | Added configuration and runnable scripts for **DAPO** and **Dr.GRPO** variant. |
+| **2025-10-19** | Added configuration and runnable scripts for **DAPO**, **Dr.GRPO**, and **2-GRPO** variants. |
 | **2025-10-17** | Integrated **Modularated** core **GRPO** training pipeline with DeepSpeed and vLLM inference. |
 | **2025-10-15** | Uploaded key papers and organized the `papers/` directory (GRPO, DAPO, Dr.GRPO, etc.). |
 | **2025-09-30** | Repository initialization and documentation setup.           |
@@ -46,6 +46,7 @@ Awesome-GRPO/
 
 
 
+
 ## 🧠 Overview of Implemented Methods
 
 | Method        | Code Configuration | Description with Summary |
@@ -53,9 +54,9 @@ Awesome-GRPO/
 | **GRPO**      |         ✅          | ✅                        |
 | **DAPO**      |         ✅          | ✅                        |
 | **Dr.GRPO**   |         ✅          | ✅                        |
+| **2-GRPO** |         ✅          | ✅                        |
 | **GTPO**      |         ☐          | ✅                        |
 | **GRPO-S**    |         ☐          | ✅                        |
-| **2-GRPO** |         ☐          | ✅                        |
 | **Pref-GRPO** |         ☐          | ✅                        |
 | **L2T-GRPO** |         ☐          | ✅                        |
 | **EDGE-GRPO** |         ☐          | ✅                        |

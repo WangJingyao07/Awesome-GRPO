@@ -8,16 +8,6 @@ The generation worker (vLLM) runs in a separate process and streams training bat
 Protocol compatibility: import helpers from `ref_client.py` (`tensor_to_bytes`, `bytes_to_tensor`, `make_bytes_list`, `bytes_list_to_list`) and use the same `/upload` and `/get` endpoints, so you can drop the code in without changing servers.
 
 
-## 🆕 Latest Updates
-
-| Date           | Update                                                       |
-| -------------- | ------------------------------------------------------------ |
-| **2025-10-19** | Added configuration and runnable scripts for **DAPO** and **Dr.GRPO** variant. |
-| **2025-10-17** | Integrated **Modularated** core **GRPO** training pipeline with DeepSpeed and vLLM inference. |
-| **2025-10-15** | Uploaded key papers and organized the `papers/` directory (GRPO, DAPO, Dr.GRPO, etc.). |
-| **2025-09-30** | Repository initialization and documentation setup.           |
-
-
 
 ## 📦 Repository Structure
 
@@ -54,9 +44,9 @@ Awesome-GRPO/
 | **GRPO**      |         ✅          | ✅                        |
 | **DAPO**      |         ✅          | ✅                        |
 | **Dr.GRPO**   |         ✅          | ✅                        |
+| **2-GRPO** |         ✅          | ✅                        |
 | **GTPO**      |         ☐          | ✅                        |
 | **GRPO-S**    |         ☐          | ✅                        |
-| **2-GRPO** |         ☐          | ✅                        |
 | **Pref-GRPO** |         ☐          | ✅                        |
 | **L2T-GRPO** |         ☐          | ✅                        |
 | **EDGE-GRPO** |         ☐          | ✅                        |
@@ -67,30 +57,100 @@ Awesome-GRPO/
 
 
 
-## ⚙️ Quick Start for Implementation
+## ⚙️ Quick Start
 
-**CODE** provides a concise, switchable implementation of GRPO and its variants, allowing to switch optimization rules with a single flag.
 
-You can quickly try each strategy with just two lines of command. We've included a README.md file with CODE.
-
-### Quick Start
+### 1️⃣ Environment Setup
 
 ```bash
-# Clone the repo
+# Clone the repository
 git clone https://github.com/WangJingyao07/Awesome-GRPO.git
 cd Awesome-GRPO/CODE
 
-# Example: run GRPO training
+# (Recommended) Create a new environment
+conda create -n awesome-grpo python=3.10 -y
+conda activate awesome-grpo
+
+# Install dependencies
+pip install -r requirements.txt
+# Or install specific versions
+pip install deepspeed==0.14.4 vllm==0.6.0.post1 transformers==4.44.0 accelerate==0.33.0
+```
+
+> 💡 **Tip:** Ensure your PyTorch + DeepSpeed versions match your CUDA installation.
+> For multi-GPU training, verify that `NCCL` is correctly configured (most servers have it by default).
+
+
+
+### 2️⃣ Model Download
+
+Place model weights under your local directory (for example, `./models/` ).
+
+```bash
+# Main model (used in training config) & Reference model (used in ref_client.py)
+huggingface-cli download Qwen/Qwen2.5-1.5B-Instruct --local-dir /data/models/Qwen2.5-1.5B-Instruct
+```
+
+> If you don’t have the CLI tool yet:
+> `pip install -U "huggingface_hub[cli]"`
+
+
+
+## 3️⃣ Update Model Paths in Code
+
+### (A) Main Model Path
+
+In your training configuration file (for example, `configs/grpo_config.py`), make sure the `model_path` points to the correct local directory:
+
+```python
+# CODE/configs/grpo_config.py
+model_path: str = "/data/models/Qwen2.5-1.5B-Instruct"
+```
+
+### (B) Reference Model Path
+
+In `ref_client.py`, update the model path to the downloaded model:
+
+```python
+# CODE/ref_client.py
+model_path = "/data/models/Qwen2.5-7B-Instruct"
+```
+
+> Since it has multiple configurations (e.g., for DAPO or Dr.GRPO), double-check all `model_path` field.
+
+
+
+## 4️⃣ Training Commands
+
+Once the environment and model paths are properly set up, you can launch training.
+
+```bash
+# Run GRPO
 CUDA_VISIBLE_DEVICES=0,1 deepspeed train.py --algo grpo
 
-# Example: run DAPO
+# Run DAPO
 CUDA_VISIBLE_DEVICES=2,3 deepspeed train.py --algo dapo
 
-# Example: run Dr.GRPO
+# Run Dr.GRPO
 CUDA_VISIBLE_DEVICES=2,3 deepspeed train.py --algo drgrpo
+
+
+# Run 2-GRPO
+CUDA_VISIBLE_DEVICES=2,3 deepspeed train.py --algo drgrpo
+
 ...
 
 ```
+
+> You can also append additional arguments, e.g.:
+>
+> ```bash
+> --seed 42 --max_steps 10000 --save_dir outputs/grpo_run1
+> ```
+>
+> DeepSpeed configuration (e.g., ZeRO stage, gradient accumulation, bf16/fp16) follows your `configs/` settings or command-line overrides.
+
+
 
 * ✅ **DeepSpeed ZeRO-2/3** for distributed fine-tuning
 * ✅ **vLLM inference engine** for efficient generation

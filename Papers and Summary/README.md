@@ -27,7 +27,7 @@
 4. Compute the relative advantage $\hat{A}_i$ for each sequence.
 5. Update the policy using a PPO-style clipped objective function.
 
-### (3) Objective
+### (3) Objective (Paper Version)
 
 ![image-20251015112057918](../Image/image-20251015112057918.png)
 
@@ -115,7 +115,7 @@ DAPO omits the explicit KL-regularization term used in GRPO to further simplify 
 4. Average the loss across all tokens and update the policy accordingly.
 
 
-### (3) Objective
+### (3) Objective (Paper Version)
 
 ![image-20251015112201428](../Image/image-20251015112201428.png)
 
@@ -138,6 +138,55 @@ CUDA_VISIBLE_DEVICES=2,3,4,5,6 deepspeed train.py --algo dapo
 
 > Understanding R1-Zero-Like Training: A Critical Perspective
 
+
+### (1) Core Concept
+
+Dr.GRPO addresses the optimization biases identified in standard GRPO, specifically, the **response-length bias** and the **question-difficulty bias**.
+
+In vanilla GRPO, dividing by the sequence length $|o_i|$ and the group-level standard deviation $\text{std}({R(q,o_1),...,R(q,o_G)})$ introduces unintended weighting effects:
+
+* Short correct responses are overemphasized (length bias).
+* Easier questions (lower variance in group rewards) get disproportionately higher gradient updates (difficulty bias).
+
+**Dr.GRPO** eliminates these biases by:
+
+1. Removing both normalization terms ($1/|o_i|$ and $\text{std}$).
+2. Using a fixed constant (e.g., generation budget) instead of `mask.sum(axis=dim)` in the masked mean function for unbiased averaging.
+3. Recovering a pure PPO-style objective where advantages are estimated using Monte Carlo returns with an unbiased baseline.
+
+This modification yields a clean, unbiased RL objective that retains GRPO’s simplicity but avoids systematic preference for long or short responses.
+
+
+### (2) Training Procedure
+
+1. Implemented using the Oat framework (modular and efficient RL for LLMs).
+2. The base model is Qwen2.5-1.5B, fine-tuned with the R1 template under online RL.
+3. The reward function is binary and verification-based (using Math-Verify2):
+   $$
+   R(q,o)=
+   \begin{cases}
+   1 & \text{if } o \text{ contains the correct final answer}\
+   0 & \text{otherwise}
+   \end{cases}
+   $$
+
+
+
+
+### (3) Objective (Paper Version)
+
+![alt text](../Image/image_drgrpo.png)
+
+
+### (4) Run Dr.GRPO
+
+```bash
+# Start reference server
+CUDA_VISIBLE_DEVICES=7 python ref_client.py
+
+# Launch training
+CUDA_VISIBLE_DEVICES=2,3,4,5,6 deepspeed train.py --algo drgrpo
+```
 
 
 

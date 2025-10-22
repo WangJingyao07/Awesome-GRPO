@@ -141,7 +141,7 @@ CUDA_VISIBLE_DEVICES=2,3,4,5,6 deepspeed train.py --algo dapo
 CUDA_VISIBLE_DEVICES=2,3,4,5,6 deepspeed train.py --algo drgrpo
 
 # Run 2-GRPO
-CUDA_VISIBLE_DEVICES=2,3,4,5,6 deepspeed train.py --algo drgrpo
+CUDA_VISIBLE_DEVICES=2,3,4,5,6 deepspeed train.py --algo 2grpo
 
 # Run GTPO
 CUDA_VISIBLE_DEVICES=2,3,4,5,6 deepspeed train.py --algo gtpo

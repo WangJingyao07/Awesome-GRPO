@@ -45,7 +45,7 @@ Awesome-GRPO/
 | **DAPO**      |         ✅          | ✅                        |
 | **Dr.GRPO**   |         ✅          | ✅                        |
 | **2-GRPO** |         ✅          | ✅                        |
-| **GTPO**      |         ☐          | ✅                        |
+| **GTPO**      |         ✅          | ✅                        |
 | **GRPO-S**    |         ☐          | ✅                        |
 | **Pref-GRPO** |         ☐          | ✅                        |
 | **L2T-GRPO** |         ☐          | ✅                        |
@@ -125,6 +125,12 @@ model_path = "/data/models/Qwen2.5-7B-Instruct"
 Once the environment and model paths are properly set up, you can launch training.
 
 ```bash
+# Start Running
+
+# Run the following command:
+CUDA_VISIBLE_DEVICES=7 python ref_client.py
+
+# Open another bash:
 # Run GRPO
 CUDA_VISIBLE_DEVICES=0,1 deepspeed train.py --algo grpo
 
@@ -134,9 +140,11 @@ CUDA_VISIBLE_DEVICES=2,3 deepspeed train.py --algo dapo
 # Run Dr.GRPO
 CUDA_VISIBLE_DEVICES=2,3 deepspeed train.py --algo drgrpo
 
-
 # Run 2-GRPO
 CUDA_VISIBLE_DEVICES=2,3 deepspeed train.py --algo drgrpo
+
+# Run GTPO
+CUDA_VISIBLE_DEVICES=2,3 deepspeed train.py --algo gtpo
 
 ...
 

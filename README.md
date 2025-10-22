@@ -1,6 +1,6 @@
 # Awesome-GRPO
 
-[![Awesome](https://awesome.re/badge.svg)](https://awesome.re) ![Static Badge](https://img.shields.io/badge/GRPO-green)![Static Badge](https://img.shields.io/badge/to_be_continue-orange)![Repo Clones](https://img.shields.io/badge/Clones-66-blue)![Stars](https://img.shields.io/github/stars/WangJingyao07/Awesome-GRPO)
+[![Awesome](https://awesome.re/badge.svg)](https://awesome.re) ![Static Badge](https://img.shields.io/badge/GRPO-green)![Static Badge](https://img.shields.io/badge/to_be_continue-orange)![Repo Clones](https://img.shields.io/badge/Clones-72-blue)![Stars](https://img.shields.io/github/stars/WangJingyao07/Awesome-GRPO)
 
 
 🔥 A curated and extensible repository for **GRPO** and its **variants**, combining both *code implementations* and *paper collections* for advanced **LLM reinforcement fine-tuning**.
@@ -11,6 +11,7 @@
 
 | Date           | Update                                                       |
 | -------------- | ------------------------------------------------------------ |
+| **2025-10-22** | Added configuration and runnable scripts for **GTPO** variant. |
 | **2025-10-19** | Added configuration and runnable scripts for **DAPO**, **Dr.GRPO**, and **2-GRPO** variants. |
 | **2025-10-17** | Integrated **Modularated** core **GRPO** training pipeline with DeepSpeed and vLLM inference. |
 | **2025-10-15** | Uploaded key papers and organized the `papers/` directory (GRPO, DAPO, Dr.GRPO, etc.). |
@@ -55,7 +56,7 @@ Awesome-GRPO/
 | **DAPO**      |         ✅          | ✅                        |
 | **Dr.GRPO**   |         ✅          | ✅                        |
 | **2-GRPO** |         ✅          | ✅                        |
-| **GTPO**      |         ☐          | ✅                        |
+| **GTPO**      |         ✅          | ✅                        |
 | **GRPO-S**    |         ☐          | ✅                        |
 | **Pref-GRPO** |         ☐          | ✅                        |
 | **L2T-GRPO** |         ☐          | ✅                        |
@@ -80,14 +81,15 @@ You can quickly try each strategy with just two lines of command. We've included
 git clone https://github.com/WangJingyao07/Awesome-GRPO.git
 cd Awesome-GRPO/CODE
 
-# Example: run GRPO training
-CUDA_VISIBLE_DEVICES=0,1 deepspeed train.py --algo grpo
 
-# Example: run DAPO
-CUDA_VISIBLE_DEVICES=2,3 deepspeed train.py --algo dapo
+# Start Running
 
-# Example: run Dr.GRPO
-CUDA_VISIBLE_DEVICES=2,3 deepspeed train.py --algo drgrpo
+# Run the following command:
+CUDA_VISIBLE_DEVICES=7 python ref_client.py
+
+# Open another bash:
+CUDA_VISIBLE_DEVICES=2,3,4,5,6 deepspeed train.py --algo grpo
+CUDA_VISIBLE_DEVICES=2,3,4,5,6 deepspeed train.py --algo dapo
 ...
 
 ```

@@ -1,6 +1,10 @@
 import bottle, queue, torch, io, json, threading, time
 from bottle import request
 
+import os
+
+os.environ["WANDB_MODE"] = "disabled"
+
 raw_queue = queue.Queue()
 result_queue = queue.Queue()
 app = bottle.Bottle()

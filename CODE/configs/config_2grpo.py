@@ -7,11 +7,11 @@ class Config:
     ref_server: str = "http://localhost:59875"
 
     all_steps: int = 1000
-    Q_batch_size: int = 20
+    Q_batch_size: int = 5
     num_pre_Q: int = 2
     train_batch_size: int = 1
     gen_update_steps: int = 16
-    save_steps: int = 200
+    save_steps: int = 100
 
     beta: float = 0.04
     compute_gen_logps: bool = True

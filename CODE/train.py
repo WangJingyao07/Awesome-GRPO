@@ -6,9 +6,9 @@ import torch.multiprocessing as mp
 from tqdm import tqdm
 from transformers import AutoTokenizer, AutoModelForCausalLM
 
-
-
 import deepspeed
+
+import wandb
 
 os.environ['TOKENIZERS_PARALLELISM'] = 'true'
 gen_device = 1    # GPU device for generation, don't put it in CUDA_VISIBLE_DEVICES

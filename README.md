@@ -11,7 +11,7 @@
 
 | Date           | Update                                                       |
 | -------------- | ------------------------------------------------------------ |
-| **2025-11-04** | Added test wandb report. |
+| **2025-11-04** | Added test wandb report and detailed settings. |
 | **2025-10-22** | Added configuration and runnable scripts for **GTPO** variant. |
 | **2025-10-19** | Added configuration and runnable scripts for **DAPO**, **Dr.GRPO**, and **2-GRPO** variants. |
 | **2025-10-17** | Integrated **Modularated** core **GRPO** training pipeline with DeepSpeed and vLLM inference. |

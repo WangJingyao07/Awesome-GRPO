@@ -120,7 +120,7 @@ model_path = "/data/models/Qwen2.5-7B-Instruct"
 
 
 
-## 4️⃣ Training Commands
+## 4️⃣ Training & Evaluation Commands
 
 Once the environment and model paths are properly set up, you can launch training.
 
@@ -166,3 +166,13 @@ CUDA_VISIBLE_DEVICES=2,3,4,5,6 deepspeed train.py --algo gtpo
 * ✅ **WandB logging** for experiment tracking
 
 
+
+For evaluation (Example Usage).
+
+```bash
+# Evaluation (Example Usage)
+ python infer.py --model_dir /path/to/model --prompt "Explain GRPO in one sentence." --device cuda \
+     --max_new_tokens 128 --temperature 0.2 --top_k 5 --output ./preds.jsonl
+
+ python infer.py --model_dir /path/to/model --prompts_file prompts.txt --device cpu --batch_size 4
+```

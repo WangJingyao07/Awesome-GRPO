@@ -1,6 +1,6 @@
 # Awesome-GRPO
 
-[![Awesome](https://awesome.re/badge.svg)](https://awesome.re) ![Static Badge](https://img.shields.io/badge/GRPO-green)![Static Badge](https://img.shields.io/badge/to_be_continue-orange)![Repo Clones](https://img.shields.io/badge/Clones-302-blue)![Stars](https://img.shields.io/github/stars/WangJingyao07/Awesome-GRPO)
+[![Awesome](https://awesome.re/badge.svg)](https://awesome.re) ![Static Badge](https://img.shields.io/badge/GRPO-green)![Static Badge](https://img.shields.io/badge/to_be_continue-orange)![Repo Clones](https://img.shields.io/badge/Clones-456-blue)![Stars](https://img.shields.io/github/stars/WangJingyao07/Awesome-GRPO)
 
 
 🔥 A curated and extensible repository for **GRPO** and its **variants**, combining both *code implementations* and *paper collections* for advanced **LLM reinforcement fine-tuning**.
@@ -11,6 +11,8 @@
 
 | Date           | Update                                                       |
 | -------------- | ------------------------------------------------------------ |
+| **2025-11-07** | Added infer.py for evaluation. |
+| **2025-11-06** | Added resources, e.g., GEPO, Flow-GRPO, etc. |
 | **2025-11-05** | Added configuration and runnable scripts for **GSPO** variant. |
 | **2025-11-04** | Added test wandb report and detailed settings. |
 | **2025-10-22** | Added configuration and runnable scripts for **GTPO** variant. |
@@ -62,7 +64,12 @@ Awesome-GRPO/
 | **GRPO-S**    |         ☐          | ✅                        |
 | **Pref-GRPO** |         ☐          | ✅                        |
 | **L2T-GRPO** |         ☐          | ✅                        |
-| **EDGE-GRPO** |         ☐          | ✅                        |
+| **GMPO** |         ☐          | ✅                        |
+| **GEPO** |         ☐          | ✅                        |
+| **Flow-GRPO** |         ☐          | ✅                        |
+| **GRPO-SCS** |         ☐          | ✅                        |
+| **D(irect)A(dvantage)PO** |         ☐          | ✅                        |
+| **D(iversity)A(ware)PO** |         ☐          | ✅                        |
 | ...           |                    |                          |
 
 ✅ means available in `CODE/` and `Paper and Summary/`

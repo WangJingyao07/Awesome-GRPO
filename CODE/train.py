@@ -16,6 +16,7 @@ gen_device = 1    # GPU device for generation, don't put it in CUDA_VISIBLE_DEVI
 from ref_client import tensor_to_bytes, bytes_to_tensor, make_bytes_list, bytes_list_to_list  
 
 
+
 # get batch: use ref_client.py
 def get_batch(ref_server_url: str):
     try:
@@ -58,6 +59,26 @@ def main():
 
     # only rank 0 prints info
     deepspeed.init_distributed()
+
+    
+    # wandb init
+    is_main = (dist.get_rank() == 0)
+    if not is_main:
+        os.environ["WANDB_DISABLED"] = "true"
+
+    if is_main:
+        wandb.init(
+            mode="online",          
+            project="awesome-grpo",
+            entity="buqi",
+            name=f"{args.algo}-train",
+            group=f"{args.algo}",
+            config={"algo": args.algo}
+        )
+        # wandb.define_metric("global_step")
+        # wandb.define_metric("train/*", step_metric="global_step")
+
+
 
     tokenizer = AutoTokenizer.from_pretrained(cfg.model_path)
 
@@ -124,6 +145,11 @@ def main():
 
         if dist.get_rank() == 0:
             progress.set_description(f"{args.algo.upper()} | Loss: {loss.item():.6f}")
+            if is_main:
+                loss_val = float(loss.detach().cpu())
+                wandb.log({"train/loss": loss_val}, step=step)
+
+            
 
         if step % cfg.gen_update_steps == 0:
             dist.barrier()
@@ -144,6 +170,10 @@ def main():
                 engine.module.save_pretrained(save_name, state_dict=state_dict)
                 tokenizer.save_pretrained(save_name)
             dist.barrier()
+
+    if is_main:
+        wandb.finish()
+
 
 if __name__ == '__main__':
     main()

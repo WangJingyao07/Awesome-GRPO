@@ -118,6 +118,7 @@ class Algorithm(AlgorithmBase):
 
         for it in range(999999999):
             if it % 3 == 0:
+                
                 try_update_model()
             inputs = random.sample(QAs, Q_batch_size)
             tic = time.time()

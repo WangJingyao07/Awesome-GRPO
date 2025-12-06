@@ -10,8 +10,21 @@ from ref_client import tensor_to_bytes, bytes_to_tensor, make_bytes_list, bytes_
 
 class Algorithm(AlgorithmBase):
 
-    def __init__(self, engine, tokenizer, beta: float, clip_param: float, compute_gen_logps: bool, **_extra):
+    def __init__(
+        self,
+        engine,
+        tokenizer,
+        beta: float,
+        clip_param: float,
+        compute_gen_logps: bool,
+        beta1: float = 1.0,
+        beta2: float = 0.1,
+        **_extra,
+    ):
         super().__init__(engine, tokenizer, beta=beta, clip_param=clip_param, compute_gen_logps=compute_gen_logps)
+        # sequence-level entropy shaping coefficients
+        self.beta1 = beta1
+        self.beta2 = beta2
 
 
     @staticmethod
@@ -21,6 +34,7 @@ class Algorithm(AlgorithmBase):
         os.environ["CUDA_VISIBLE_DEVICES"] = f'{gen_device}'
         torch.cuda.set_device(0)
         print(f"Generation worker process uses GPU {gen_device}")
+        # print(f"Generation worker process uses GPU {gen_device}")
 
 
         # gen_worker
@@ -126,7 +140,7 @@ class Algorithm(AlgorithmBase):
             if it % 5 == 0:
                 print('answers:', answers[0])
 
-            # advantage standardization
+            # advantage standardization (sequence-level baseline, same as GRPO)
             for i, pp in enumerate(prompt_inputs):
                 prompt_ids = tokenizer(pp, return_tensors="pt", add_special_tokens=False)["input_ids"]
                 plen = prompt_ids.shape[1]
@@ -181,7 +195,8 @@ class Algorithm(AlgorithmBase):
 
         prompt_length = batch['plen']
         inputs = batch['inputs'].to(engine.device)
-        advantages = batch['rewards'].to(engine.device).unsqueeze(1)
+        # base sequence-level rewards
+        base_rewards = batch['rewards'].to(engine.device)  # (B,)
 
         logits = engine(inputs).logits
         logits = logits[:, :-1, :]  # (B, L-1, V)
@@ -195,28 +210,63 @@ class Algorithm(AlgorithmBase):
         per_token_kl = torch.exp(d) - d - 1
 
         completion_mask = (inputs[:, prompt_length:] != tokenizer.pad_token_id).int()
+        mask = completion_mask.to(per_token_logps.dtype)
 
         if 'gen_logps' in batch:
-            mask = completion_mask.to(per_token_logps.dtype)
-            # sequence-level log-probs (masked sum)
-            new_seq_logp = (per_token_logps * mask).sum(dim=1)        
-            old_seq_logp = (batch['gen_logps'].to(per_token_logps.device) * mask).sum(dim=1)  
+            # old policy log-probs from vLLM
+            old_token_logps = batch['gen_logps'].to(per_token_logps.device)
+            # token-level entropy
+            entropy_tokens = -old_token_logps * mask
 
-            # log ratio and numeric stabilisation
-            log_ratio = new_seq_logp - old_seq_logp                 
+            token_counts = mask.sum(dim=1) + 1e-6  # (B,)
+            seq_entropy = (entropy_tokens.sum(dim=1) / token_counts)  # (B,)
+
+            pos_mask_seq = base_rewards > 0
+            neg_mask_seq = ~pos_mask_seq
+
+            H_pos = seq_entropy[pos_mask_seq]
+            H_neg = seq_entropy[neg_mask_seq]
+
+            shaped = torch.zeros_like(base_rewards)
+            eps = 1e-6
+
+            # entropy bonus
+            if H_pos.numel() > 0:
+                norm_pos = H_pos / (H_pos.sum() + eps)  
+                shaped[pos_mask_seq] = (
+                    self.beta1 * base_rewards[pos_mask_seq]
+                    + self.beta2 * norm_pos * H_pos.numel()
+                )
+
+            # inverse-entropy penalty
+            if H_neg.numel() > 0:
+                inv_H_neg = 1.0 / (H_neg + eps)
+                norm_neg = inv_H_neg / (inv_H_neg.sum() + eps)
+                shaped[neg_mask_seq] = (
+                    self.beta1 * base_rewards[neg_mask_seq]
+                    + self.beta2 * norm_neg * H_neg.numel()
+                )
+
+            advantages = (shaped - shaped.mean()) / (shaped.std() + 1e-8)  # (B,)
+            seq_adv = advantages  # (B,)
+
+            # sequence-level log-probs
+            new_seq_logp = (per_token_logps * mask).sum(dim=1)
+            old_seq_logp = (old_token_logps * mask).sum(dim=1)
+
+            log_ratio = new_seq_logp - old_seq_logp
             LOG_RATIO_CLAMP = 20.0
             log_ratio = torch.clamp(log_ratio, -LOG_RATIO_CLAMP, LOG_RATIO_CLAMP)
 
-            ratio = torch.exp(log_ratio)                               
-            seq_adv = advantages.view(-1)                           
-
-
+            ratio = torch.exp(log_ratio)
             clipped_ratio = torch.clamp(ratio, 1.0 - self.clip_param, 1.0 + self.clip_param)
-            seq_obj = torch.min(ratio * seq_adv, clipped_ratio * seq_adv) 
-            per_seq_kl = (per_token_kl * mask).sum(dim=1)              
+
+            seq_obj = torch.min(ratio * seq_adv, clipped_ratio * seq_adv)
+            per_seq_kl = (per_token_kl * mask).sum(dim=1)
 
             loss = - (seq_obj - self.beta * per_seq_kl).mean()
         else:
+            advantages = base_rewards.unsqueeze(1)
             per_token_obj = torch.exp(per_token_logps - per_token_logps.detach()) * advantages
             assert self.compute_gen_logps is False
             per_token_loss = -(per_token_obj - self.beta * per_token_kl)

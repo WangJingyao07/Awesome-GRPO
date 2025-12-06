@@ -17,6 +17,10 @@ class Config:
     compute_gen_logps: bool = True
     clip_param: float = 0.2
 
+
+    beta1: float = 1.0      
+    beta2: float = 0.1
+
 def make_ds_config(cfg: "Config") -> dict:
     return {
         "train_micro_batch_size_per_gpu": cfg.train_batch_size,

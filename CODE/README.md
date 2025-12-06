@@ -46,10 +46,19 @@ Awesome-GRPO/
 | **Dr.GRPO**   |         ✅          | ✅                        |
 | **2-GRPO** |         ✅          | ✅                        |
 | **GTPO**      |         ✅          | ✅                        |
-| **GRPO-S**    |         ☐          | ✅                        |
+| **GRPO-S**    |         ✅          | ✅                        |
+| **GMPO** |         ✅          | ✅                        |
+| **GEPO** |         ✅          | ✅                        |
 | **Pref-GRPO** |         ☐          | ✅                        |
 | **L2T-GRPO** |         ☐          | ✅                        |
-| **EDGE-GRPO** |         ☐          | ✅                        |
+| **TreePO** |         ☐          | ✅                        |
+| **GPO** |         ☐          | ✅                        |
+| **GiGPO** |         ☐          | ✅                        |
+| **Flow-GRPO** |         ☐          | ✅                        |
+| **GRPO-SCS** |         ☐          | ✅                        |
+| **SGPO** |         ☐          | ✅                        |
+| **D(irect)A(dvantage)PO** |         ☐          | ✅                        |
+| **D(iversity)A(ware)PO** |         ☐          | ✅                        |
 | ...           |                    |                          |
 
 ✅ means available in `CODE/` and `Paper and Summary/`

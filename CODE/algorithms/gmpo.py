@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+# -*- coding: utf-8 -*- 
 from typing import Dict
 import torch
 from .base import AlgorithmBase
@@ -10,30 +10,16 @@ from ref_client import tensor_to_bytes, bytes_to_tensor, make_bytes_list, bytes_
 
 class Algorithm(AlgorithmBase):
 
-    def __init__(
-        self,
-        engine,
-        tokenizer,
-        beta: float,
-        clip_param: float,
-        compute_gen_logps: bool,
-        alpha1: float = 1.0,
-        alpha2: float = 0.1,
-        **_extra,
-    ):
+    def __init__(self, engine, tokenizer, beta: float, clip_param: float, compute_gen_logps: bool, **_extra):
         super().__init__(engine, tokenizer, beta=beta, clip_param=clip_param, compute_gen_logps=compute_gen_logps)
-        # token-level entropy shaping coefficients
-        self.alpha1 = alpha1
-        self.alpha2 = alpha2
 
     @staticmethod
     # Generate sub-processes sampling & scoring
     def gen_worker(Q, model_path: str, gen_device: int, ref_server_url: str,
-                num_pre_Q: int, train_batch_size: int, compute_gen_logps: bool, Q_batch_size: int):
+                   num_pre_Q: int, train_batch_size: int, compute_gen_logps: bool, Q_batch_size: int):
         os.environ["CUDA_VISIBLE_DEVICES"] = f'{gen_device}'
         torch.cuda.set_device(0)
         print(f"Generation worker process uses GPU {gen_device}")
-
 
         # gen_worker
         from vllm import LLM, SamplingParams
@@ -41,7 +27,6 @@ class Algorithm(AlgorithmBase):
         from math_verify import parse, verify, ExprExtractionConfig
         from torch.nn.utils.rnn import pad_sequence
         from transformers import AutoTokenizer
-
 
         tokenizer = AutoTokenizer.from_pretrained(model_path)
 
@@ -73,7 +58,7 @@ class Algorithm(AlgorithmBase):
             for x in prompts:
                 tip_text.append(tokenizer.apply_chat_template(
                     [{"role": "system", "content": system_prompt},
-                    {"role": "user", "content": x}],
+                     {"role": "user", "content": x}],
                     tokenize=False, add_generation_prompt=True))
             voutputs = vllm_gen.generate(tip_text, sampling_params, use_tqdm=False)
             answers, ans_token_ids = [], []
@@ -102,7 +87,6 @@ class Algorithm(AlgorithmBase):
             answer_count = answer.count("<answer>") + answer.count("</answer>")
             return 1.25 if re.match(pattern, answer, re.DOTALL | re.VERBOSE) and think_count == 2 and answer_count == 2 else -1
 
-
         def gen_samples(inputs):
             prompts = [x["Q"] for x in inputs]
             answers, ans_token_ids = gen_answers(prompts)
@@ -112,10 +96,9 @@ class Algorithm(AlgorithmBase):
                     rewards.append(reward_correct(inp, a) + reward_format(inp, a))
             prompts_text = [tokenizer.apply_chat_template(
                 [{"role": "system", "content": system_prompt},
-                {"role": "user", "content": x}],
+                 {"role": "user", "content": x}],
                 tokenize=False, add_generation_prompt=True) for x in prompts]
             return prompts_text, torch.tensor(rewards, dtype=torch.float32), answers, ans_token_ids
-
 
         def try_update_model():
             try:
@@ -172,11 +155,10 @@ class Algorithm(AlgorithmBase):
                             ref_server_ver = 'string'
                 elif ref_server_ver == 'string':
                     xdata = make_bytes_list([json.dumps({"Q": pp[0], "As": curr_answers}).encode(),
-                                            tensor_to_bytes(curr_rewards)])
+                                             tensor_to_bytes(curr_rewards)])
                     r = requests.post(f"{ref_server_url}/upload", data=xdata)
                     if r.content == b'tensor':
                         ref_server_ver = 'tensor'
-
 
     @staticmethod
     def _get_per_token_logps(logits: torch.Tensor, input_ids: torch.Tensor) -> torch.Tensor:
@@ -193,81 +175,60 @@ class Algorithm(AlgorithmBase):
 
         prompt_length = batch['plen']
         inputs = batch['inputs'].to(engine.device)
-        base_rewards = batch['rewards'].to(engine.device)  # (B,)
+
+        advantages = batch['rewards'].to(engine.device).unsqueeze(1)  # (B,1)
 
         logits = engine(inputs).logits
         logits = logits[:, :-1, :]  # (B, L-1, V)
         input_ids = inputs[:, 1:]   # (B, L-1)
 
-        per_token_logps = self._get_per_token_logps(logits, input_ids)
-        per_token_logps = per_token_logps[:, prompt_length - 1:]
-        ref_per_token_logps = batch['refs'].to(per_token_logps.device)
+        per_token_logps = self._get_per_token_logps(logits, input_ids)     # (B, L-1)
+        per_token_logps = per_token_logps[:, prompt_length - 1:]          # only completion part (B, T)
+        ref_per_token_logps = batch['refs'].to(per_token_logps.device)    # (B, T)
 
         d = ref_per_token_logps - per_token_logps
-        per_token_kl = torch.exp(d) - d - 1
+        per_token_kl = torch.exp(d) - d - 1                               # (B, T)
 
-        completion_mask = (inputs[:, prompt_length:] != tokenizer.pad_token_id).int()
+        completion_mask = (inputs[:, prompt_length:] != tokenizer.pad_token_id).int()  # (B, T)
         mask = completion_mask.to(per_token_logps.dtype)
 
         if 'gen_logps' in batch:
-            old_token_logps = batch['gen_logps'].to(per_token_logps.device)
-            # token entropy: H_{i,t} = -log p_old(a_{i,t})
-            entropy_tokens = -old_token_logps * mask  # (B, T)
+            # old policy log-probs from vLLM
+            old_token_logps = batch['gen_logps'].to(per_token_logps.device)   # (B, T)
 
-            eps = 1e-6
-            B, T = entropy_tokens.shape
+            sgn = torch.where(advantages > 0,
+                              torch.ones_like(advantages),
+                              -torch.ones_like(advantages))                  # (B,1)
 
-            pos_mask_seq = (base_rewards > 0).to(mask.dtype).view(B, 1)  # (B,1)
-            neg_mask_seq = (base_rewards <= 0).to(mask.dtype).view(B, 1)
+            # sgn_A * (log π_new - log π_old)
+            log_ratio = per_token_logps - old_token_logps                    # (B, T)
+            sgn_logdiff = sgn * log_ratio                                   
 
-            seq_reward = base_rewards.view(B, 1).expand(B, T)
+            # epsilon = self.clip_param:contentReference[oaicite:1]{index=1}
+            eps = float(self.clip_param)
+            sgn_logdiff_clamped = torch.clamp(sgn_logdiff, -eps, eps)
+            sgn_logdiff_min = torch.min(sgn_logdiff, sgn_logdiff_clamped)
+            log_probs_diff_min = sgn * sgn_logdiff_min                        # (B, T)
 
+            # Calculate the geometric mean only for valid tokens: exp(sum / count)
+            log_probs_diff_min = log_probs_diff_min * mask
+            token_counts = mask.sum(dim=1)                                 
+            token_counts = torch.clamp(token_counts, min=1.0)
 
-            H_pos = entropy_tokens * pos_mask_seq
-            sum_H_pos_t = H_pos.sum(dim=0, keepdim=True) + eps
-            r_pos = torch.zeros_like(entropy_tokens)
-            r_pos += self.alpha1 * seq_reward * pos_mask_seq
-            r_pos += self.alpha2 * H_pos / sum_H_pos_t
+            geom_log = log_probs_diff_min.sum(dim=1) / token_counts         
+            importance_ratio = torch.exp(geom_log)                         
 
-            inv_H = 1.0 / (entropy_tokens + eps)
-            inv_H_neg = inv_H * neg_mask_seq
-            sum_inv_H_neg_t = inv_H_neg.sum(dim=0, keepdim=True) + eps
-            r_neg = torch.zeros_like(entropy_tokens)
-            r_neg += self.alpha1 * seq_reward * neg_mask_seq
-            r_neg += self.alpha2 * inv_H_neg / sum_inv_H_neg_t
+          
+            seq_adv = advantages.view(-1)                                  
+            seq_obj = importance_ratio * seq_adv                           
 
+            per_seq_kl = (per_token_kl * mask).sum(dim=1) / token_counts    
 
-            shaped_tokens = (r_pos + r_neg) * mask  # (B, T)
-
-
-            flat_shaped = shaped_tokens.view(-1)
-            flat_mask = mask.view(-1).bool()
-            valid_vals = flat_shaped[flat_mask]
-            valid_vals = (valid_vals - valid_vals.mean()) / (valid_vals.std() + 1e-8)
-
-            adv_tokens = torch.zeros_like(flat_shaped)
-            adv_tokens[flat_mask] = valid_vals
-            adv_tokens = adv_tokens.view_as(shaped_tokens)  # (B, T)
-
-            # per-token ratio: new vs old logp
-            log_ratio_tokens = (per_token_logps - old_token_logps)  # (B, T)
-            LOG_RATIO_CLAMP = 20.0
-            log_ratio_tokens = torch.clamp(log_ratio_tokens, -LOG_RATIO_CLAMP, LOG_RATIO_CLAMP)
-            ratio_tokens = torch.exp(log_ratio_tokens)
-            clipped_ratio_tokens = torch.clamp(ratio_tokens, 1.0 - self.clip_param, 1.0 + self.clip_param)
-
-            obj_tokens = torch.min(ratio_tokens * adv_tokens, clipped_ratio_tokens * adv_tokens)
-
-
-            obj = (obj_tokens * mask).sum() / (mask.sum() + 1e-8)
-            kl_term = (per_token_kl * mask).sum() / (mask.sum() + 1e-8)
-
-            loss = -(obj - self.beta * kl_term)
+            loss = - (seq_obj - self.beta * per_seq_kl).mean()
         else:
-            advantages = base_rewards.unsqueeze(1)
             per_token_obj = torch.exp(per_token_logps - per_token_logps.detach()) * advantages
             assert self.compute_gen_logps is False
             per_token_loss = -(per_token_obj - self.beta * per_token_kl)
             loss = ((per_token_loss * completion_mask).sum(dim=1) / completion_mask.sum(dim=1)).mean()
-            
+
         return loss

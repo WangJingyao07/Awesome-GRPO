@@ -15,10 +15,7 @@ class Config:
 
     beta: float = 0.04
     compute_gen_logps: bool = True
-    clip_param: float = 0.2
-
-    alpha1: float = 1.0     
-    alpha2: float = 0.1
+    clip_param: float = 0.4 # epsilon for GMPO
 
 def make_ds_config(cfg: "Config") -> dict:
     return {

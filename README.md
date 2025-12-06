@@ -1,6 +1,6 @@
 # Awesome-GRPO
 
-[![Awesome](https://awesome.re/badge.svg)](https://awesome.re) ![Static Badge](https://img.shields.io/badge/GRPO-green)![Static Badge](https://img.shields.io/badge/to_be_continue-orange)![Repo Clones](https://img.shields.io/badge/Clones-456-blue)![Stars](https://img.shields.io/github/stars/WangJingyao07/Awesome-GRPO)
+[![Awesome](https://awesome.re/badge.svg)](https://awesome.re) ![Static Badge](https://img.shields.io/badge/GRPO-green)![Static Badge](https://img.shields.io/badge/to_be_continue-orange)![Repo Clones](https://img.shields.io/badge/Clones-722-blue)![Stars](https://img.shields.io/github/stars/WangJingyao07/Awesome-GRPO)
 
 
 🔥 A curated and extensible repository for **GRPO** and its **variants**, combining both *code implementations* and *paper collections* for advanced **LLM reinforcement fine-tuning**.
@@ -11,6 +11,9 @@
 
 | Date           | Update                                                       |
 | -------------- | ------------------------------------------------------------ |
+| **2025-12-10** | Added configuration and runnable scripts for **GMPO** variant. |
+| **2025-11-25** | Optimize the CODE for token-level GRPO-style variants. |
+| **2025-11-20** | Added More Resources (before 11/2025). |
 | **2025-11-07** | Added infer.py for evaluation. |
 | **2025-11-06** | Added resources, e.g., GEPO, Flow-GRPO, etc. |
 | **2025-11-05** | Added configuration and runnable scripts for **GSPO** variant. |
@@ -52,6 +55,7 @@ Awesome-GRPO/
 
 
 
+
 ## 🧠 Overview of Implemented Methods
 
 | Method        | Code Configuration | Description with Summary |
@@ -61,13 +65,17 @@ Awesome-GRPO/
 | **Dr.GRPO**   |         ✅          | ✅                        |
 | **2-GRPO** |         ✅          | ✅                        |
 | **GTPO**      |         ✅          | ✅                        |
-| **GRPO-S**    |         ☐          | ✅                        |
+| **GRPO-S**    |         ✅          | ✅                        |
+| **GMPO** |         ✅          | ✅                        |
+| **GEPO** |         ✅          | ✅                        |
 | **Pref-GRPO** |         ☐          | ✅                        |
 | **L2T-GRPO** |         ☐          | ✅                        |
-| **GMPO** |         ☐          | ✅                        |
-| **GEPO** |         ☐          | ✅                        |
+| **TreePO** |         ☐          | ✅                        |
+| **GPO** |         ☐          | ✅                        |
+| **GiGPO** |         ☐          | ✅                        |
 | **Flow-GRPO** |         ☐          | ✅                        |
 | **GRPO-SCS** |         ☐          | ✅                        |
+| **SGPO** |         ☐          | ✅                        |
 | **D(irect)A(dvantage)PO** |         ☐          | ✅                        |
 | **D(iversity)A(ware)PO** |         ☐          | ✅                        |
 | ...           |                    |                          |
